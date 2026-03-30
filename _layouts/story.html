@@ -1,0 +1,36 @@
+---
+layout: default
+---
+
+<article class="story">
+  <header class="story-header">
+    <h1>{{ page.title }}</h1>
+    <div class="story-meta">
+      <span class="author">作者：{{ page.author }}</span>
+      <span class="date">{{ page.date | date: "%Y-%m-%d" }}</span>
+      {% if page.status == "seed" %}
+      <span class="status-badge">故事种子——欢迎续写</span>
+      {% endif %}
+    </div>
+    {% if page.tags %}
+    <div class="story-tags">
+      {% for tag in page.tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </header>
+
+  <div class="story-content">
+    {{ content }}
+  </div>
+
+  <footer class="story-footer">
+    <a href="{{ '/' | relative_url }}">← 回到故事列表</a>
+  </footer>
+
+  <section class="comments">
+    <h2>读者留言</h2>
+    {% include giscus.html %}
+  </section>
+</article>

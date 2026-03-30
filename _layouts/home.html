@@ -1,0 +1,75 @@
+---
+layout: default
+---
+
+<div class="home">
+  <section class="hero">
+    {{ content }}
+  </section>
+
+  <section class="story-list">
+    <h2>所有故事</h2>
+
+    {% assign all_tags = "" | split: "" %}
+    {% for story in site.stories %}
+      {% for tag in story.tags %}
+        {% unless all_tags contains tag %}
+          {% assign all_tags = all_tags | push: tag %}
+        {% endunless %}
+      {% endfor %}
+    {% endfor %}
+
+    {% if all_tags.size > 0 %}
+    <div class="tag-filter">
+      <button class="tag-btn active" data-tag="all">全部</button>
+      {% for tag in all_tags %}
+      <button class="tag-btn" data-tag="{{ tag }}">{{ tag }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="stories">
+      {% assign sorted_stories = site.stories | sort: "date" | reverse %}
+      {% for story in sorted_stories %}
+      <article class="story-card" data-tags="{{ story.tags | join: ',' }}">
+        <h3><a href="{{ story.url | relative_url }}">{{ story.title }}</a></h3>
+        <div class="story-meta">
+          <span class="author">{{ story.author }}</span>
+          <span class="date">{{ story.date | date: "%Y-%m-%d" }}</span>
+          {% if story.status == "seed" %}
+          <span class="status-badge">故事种子</span>
+          {% endif %}
+        </div>
+        {% if story.tags %}
+        <div class="story-tags">
+          {% for tag in story.tags %}
+          <span class="tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var buttons = document.querySelectorAll('.tag-btn');
+  var cards = document.querySelectorAll('.story-card');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      buttons.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var tag = btn.getAttribute('data-tag');
+      cards.forEach(function (card) {
+        if (tag === 'all' || card.getAttribute('data-tags').split(',').indexOf(tag) !== -1) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+});
+</script>

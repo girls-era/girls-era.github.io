@@ -1,0 +1,24 @@
+title: 少女心事
+description: 刻板印象之外的少女故事——一个众创小说项目
+url: "https://girls-era.github.io"
+baseurl: ""
+lang: zh-CN
+
+collections:
+  stories:
+    output: true
+    permalink: /stories/:slug/
+
+defaults:
+  - scope:
+      path: ""
+      type: "stories"
+    values:
+      layout: "story"
+
+markdown: kramdown
+exclude:
+  - CONTRIBUTING.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor

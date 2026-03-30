@@ -1,0 +1,129 @@
+name: 从投稿创建故事文件
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-story:
+    if: github.event.label.name == '故事投稿'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 解析投稿内容并创建 PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+
+            // 解析 issue form 字段
+            function getField(label) {
+              const regex = new RegExp('### ' + label + '\\s*\\n\\s*([\\s\\S]*?)(?=\\n### |$)');
+              const match = body.match(regex);
+              return match ? match[1].trim() : '';
+            }
+
+            const title = getField('故事标题') || issue.title.replace('故事投稿：', '').trim();
+            const author = getField('笔名') || '匿名';
+            const tagsRaw = getField('主题标签');
+            const content = getField('故事正文');
+
+            if (!content) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '无法解析故事正文，请检查投稿格式。'
+              });
+              return;
+            }
+
+            // 解析标签
+            const tags = tagsRaw
+              .split(/[,，\n]/)
+              .map(t => t.replace(/^-\s*/, '').trim())
+              .filter(t => t && !t.startsWith('[') && t !== 'None');
+
+            // 计算编号
+            const { data: files } = await github.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: '_stories'
+            }).catch(() => ({ data: [] }));
+
+            let maxNum = 0;
+            if (Array.isArray(files)) {
+              files.forEach(f => {
+                const m = f.name.match(/^(\d+)/);
+                if (m) maxNum = Math.max(maxNum, parseInt(m[1]));
+              });
+            }
+            const num = String(maxNum + 1).padStart(3, '0');
+            const slug = title.replace(/[^\u4e00-\u9fff\w]/g, '').slice(0, 20) || 'untitled';
+            const filename = `${num}-${slug}.md`;
+
+            // 生成日期
+            const today = new Date().toISOString().split('T')[0];
+
+            // 生成文件内容
+            const tagYaml = tags.length > 0 ? `[${tags.join(', ')}]` : '[]';
+            const fileContent = `---
+            title: "${title}"
+            author: "${author}"
+            date: ${today}
+            tags: ${tagYaml}
+            status: seed
+            ---
+
+            ${content}
+            `.replace(/^            /gm, '');
+
+            // 创建分支
+            const branch = `story/${num}-issue-${issue.number}`;
+            const { data: ref } = await github.rest.git.getRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'heads/main'
+            });
+
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/heads/${branch}`,
+              sha: ref.object.sha
+            });
+
+            // 创建文件
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: `_stories/${filename}`,
+              message: `添加故事：${title}（来自 #${issue.number}）`,
+              content: Buffer.from(fileContent).toString('base64'),
+              branch: branch
+            });
+
+            // 创建 PR
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `故事投稿：${title}`,
+              body: `来自 #${issue.number} 的投稿\n\n**作者：** ${author}\n**标签：** ${tags.join(', ') || '无'}\n\n---\n关闭此 PR 将自动关闭对应的 Issue。\n\nCloses #${issue.number}`,
+              head: branch,
+              base: 'main'
+            });
+
+            // 在 issue 上评论
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: `感谢投稿！已自动创建 PR：${pr.html_url}\n\n审阅通过后会合并发布。`
+            });

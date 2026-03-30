@@ -1,0 +1,56 @@
+name: 故事投稿
+description: 通过这个表单投稿你的故事
+title: "故事投稿：[标题]"
+labels: ["故事投稿"]
+body:
+  - type: input
+    id: story-title
+    attributes:
+      label: 故事标题
+      placeholder: 给你的故事起个名字
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: 笔名
+      placeholder: 可以是任何你喜欢的名字
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tags
+    attributes:
+      label: 主题标签
+      multiple: true
+      options:
+        - 智识
+        - 友谊
+        - 野心
+        - 竞争
+        - 贫穷
+        - 身体
+        - 家庭
+        - 成长
+
+  - type: textarea
+    id: content
+    attributes:
+      label: 故事正文
+      placeholder: |
+        在这里写你的故事。
+
+        不需要华丽的文笔，真实就好。
+        段落之间空一行。
+        可以用 --- 分隔场景。
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: 贡献者协议
+      options:
+        - label: 我同意将出版权授予「少女心事」项目，保留署名权，知悉所有收入全部捐赠
+          required: true

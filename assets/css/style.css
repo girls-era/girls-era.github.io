@@ -87,6 +87,11 @@ a { color: inherit; text-decoration: none; }
 
 .nav-links a:hover { color: var(--white); }
 
+.nav-submit {
+  color: var(--red) !important;
+  font-weight: 700 !important;
+}
+
 .nav-gh {
   color: var(--gray) !important;
   border: 1px solid var(--gray);
@@ -652,6 +657,148 @@ a { color: inherit; text-decoration: none; }
   color: inherit;
   padding: 0;
   border: none;
+}
+
+/* ============================================
+   投稿页
+   ============================================ */
+.submit-hero {
+  background: var(--black);
+  color: var(--white);
+  padding: 9rem 2.5rem 3.5rem;
+  text-align: center;
+}
+
+.submit-hero-inner {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.submit-hero h1 {
+  font-family: var(--sans);
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.submit-hero p {
+  color: var(--gray-light);
+  font-size: 1rem;
+}
+
+.submit-form-section {
+  background: var(--off-white);
+  padding: 4rem 2.5rem 5rem;
+}
+
+.submit-form-inner {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.story-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-group label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.03em;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%;
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.8;
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--gray-rule);
+  background: var(--white);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: var(--red);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 300px;
+}
+
+.tag-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-check {
+  font-family: var(--sans) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  padding: 0.4rem 1rem;
+  border: 1.5px solid var(--gray-rule);
+  background: var(--white);
+  color: var(--gray);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0 !important;
+}
+
+.tag-check input {
+  display: none;
+}
+
+.tag-check:has(input:checked) {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+.form-note {
+  padding: 1.2rem 1.4rem;
+  background: var(--white);
+  border-left: 3px solid var(--red);
+}
+
+.form-note p {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--gray);
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
+}
+
+.form-note p:last-child {
+  margin-bottom: 0;
+}
+
+.btn-submit {
+  align-self: flex-start;
+  font-size: 0.88rem;
+  padding: 1rem 3rem;
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .submit-hero { padding: 7rem 1.5rem 2.5rem; }
+  .submit-form-section { padding: 2.5rem 1.5rem 3rem; }
+  .btn-submit { align-self: stretch; }
 }
 
 /* ============================================

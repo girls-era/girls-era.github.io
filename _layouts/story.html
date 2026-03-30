@@ -2,35 +2,42 @@
 layout: default
 ---
 
-<article class="story">
-  <header class="story-header">
-    <h1>{{ page.title }}</h1>
-    <div class="story-meta">
-      <span class="author">作者：{{ page.author }}</span>
-      <span class="date">{{ page.date | date: "%Y-%m-%d" }}</span>
+<article class="story-page">
+  <header class="story-hero">
+    <div class="story-hero-inner">
       {% if page.status == "seed" %}
-      <span class="status-badge">故事种子——欢迎续写</span>
+      <div class="story-badge">故事种子 — 欢迎续写</div>
+      {% endif %}
+      <h1>{{ page.title }}</h1>
+      <div class="story-meta">
+        <span>{{ page.author }}</span>
+        <span class="meta-dot"></span>
+        <span>{{ page.date | date: "%Y.%m.%d" }}</span>
+      </div>
+      {% if page.tags %}
+      <div class="story-tags">
+        {% for tag in page.tags %}
+        <span class="story-tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
       {% endif %}
     </div>
-    {% if page.tags %}
-    <div class="story-tags">
-      {% for tag in page.tags %}
-      <span class="tag">{{ tag }}</span>
-      {% endfor %}
-    </div>
-    {% endif %}
   </header>
 
-  <div class="story-content">
-    {{ content }}
+  <div class="story-body">
+    <div class="story-content">
+      {{ content }}
+    </div>
   </div>
 
-  <footer class="story-footer">
-    <a href="{{ '/' | relative_url }}">← 回到故事列表</a>
-  </footer>
+  <nav class="story-nav">
+    <a href="{{ '/' | relative_url }}" class="btn-outline">&larr; 回到故事列表</a>
+  </nav>
 
-  <section class="comments">
-    <h2>读者留言</h2>
-    {% include giscus.html %}
+  <section class="story-comments">
+    <div class="comments-inner">
+      <h2>读者留言</h2>
+      {% include giscus.html %}
+    </div>
   </section>
 </article>

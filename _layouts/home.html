@@ -2,13 +2,26 @@
 layout: default
 ---
 
-<div class="home">
-  <section class="hero">
-    {{ content }}
-  </section>
+<!-- ===== HERO: 全幅黑色色块 ===== -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">众创小说项目</div>
+    <h1 class="hero-title">少女心事</h1>
+    <p class="hero-subtitle">影视剧里少女的青春被简化为粉红泡泡。<br>但真实的少女心事是——成绩排名的好胜心、友谊、野心、贫穷、身体的变化、被误读为"暗恋"的竞争欲。</p>
+    <div class="hero-cta">
+      <a href="#stories" class="btn-primary">阅读故事</a>
+      <a href="{{ '/contribute/' | relative_url }}" class="btn-outline">参与写作</a>
+    </div>
+  </div>
+</section>
 
-  <section class="story-list">
-    <h2>所有故事</h2>
+<!-- ===== 故事列表 ===== -->
+<section class="stories-section" id="stories">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-title">故事</h2>
+      <p class="section-desc">每个故事都是一颗种子，等待被续写</p>
+    </div>
 
     {% assign all_tags = "" | split: "" %}
     {% for story in site.stories %}
@@ -28,30 +41,41 @@ layout: default
     </div>
     {% endif %}
 
-    <div class="stories">
+    <div class="story-grid">
       {% assign sorted_stories = site.stories | sort: "date" | reverse %}
       {% for story in sorted_stories %}
-      <article class="story-card" data-tags="{{ story.tags | join: ',' }}">
-        <h3><a href="{{ story.url | relative_url }}">{{ story.title }}</a></h3>
-        <div class="story-meta">
-          <span class="author">{{ story.author }}</span>
-          <span class="date">{{ story.date | date: "%Y-%m-%d" }}</span>
-          {% if story.status == "seed" %}
-          <span class="status-badge">故事种子</span>
-          {% endif %}
+      <a href="{{ story.url | relative_url }}" class="story-card" data-tags="{{ story.tags | join: ',' }}">
+        <div class="card-number">{{ forloop.index | prepend: '00' | slice: -3, 3 }}</div>
+        <h3 class="card-title">{{ story.title }}</h3>
+        <div class="card-meta">
+          <span>{{ story.author }}</span>
+          <span>{{ story.date | date: "%Y.%m.%d" }}</span>
         </div>
         {% if story.tags %}
-        <div class="story-tags">
+        <div class="card-tags">
           {% for tag in story.tags %}
-          <span class="tag">{{ tag }}</span>
+          <span class="card-tag">{{ tag }}</span>
           {% endfor %}
         </div>
         {% endif %}
-      </article>
+        {% if story.status == "seed" %}
+        <div class="card-badge">故事种子</div>
+        {% endif %}
+        <div class="card-arrow">&rarr;</div>
+      </a>
       {% endfor %}
     </div>
-  </section>
-</div>
+  </div>
+</section>
+
+<!-- ===== 号召参与色块 ===== -->
+<section class="cta-block">
+  <div class="cta-inner">
+    <h2>写下你的少女心事</h2>
+    <p>你经历过的、见证过的、不想被遗忘的——都值得被写成故事。</p>
+    <a href="{{ '/contribute/' | relative_url }}" class="btn-primary">了解如何贡献</a>
+  </div>
+</section>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

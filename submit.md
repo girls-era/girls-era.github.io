@@ -6,87 +6,114 @@ permalink: /submit/
 
 <section class="submit-hero">
   <div class="submit-hero-inner">
-    <h1>投稿故事</h1>
-    <p>写下你的少女心事，不需要会用 Git。</p>
+    <div class="submit-label">投稿</div>
+    <h1>写下你的故事</h1>
+    <p>不需要注册任何账号，不需要会编程。<br>填完表单点提交，我们会审阅后发布。</p>
   </div>
 </section>
 
 <section class="submit-form-section">
   <div class="submit-form-inner">
-    <form id="story-form" class="story-form">
+
+    <form id="story-form" class="story-form" action="https://formspree.io/f/FORM_ID" method="POST">
+      <input type="hidden" name="_subject" value="新投稿：少女心事">
+      <input type="hidden" name="_captcha" value="true">
+
       <div class="form-group">
         <label for="story-title">故事标题</label>
-        <input type="text" id="story-title" placeholder="给你的故事起个名字" required>
+        <input type="text" id="story-title" name="title" placeholder="给你的故事起个名字" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="story-author">笔名</label>
+          <input type="text" id="story-author" name="author" placeholder="你想被怎么称呼" required>
+        </div>
+        <div class="form-group">
+          <label for="story-email">邮箱（可选，用于联系你）</label>
+          <input type="email" id="story-email" name="_replyto" placeholder="不会公开">
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="story-author">你的笔名</label>
-        <input type="text" id="story-author" placeholder="可以是任何你喜欢的名字" required>
-      </div>
-
-      <div class="form-group">
-        <label>主题标签（可多选）</label>
+        <label>主题标签</label>
         <div class="tag-checkboxes">
-          <label class="tag-check"><input type="checkbox" name="tags" value="智识"> 智识</label>
-          <label class="tag-check"><input type="checkbox" name="tags" value="友谊"> 友谊</label>
-          <label class="tag-check"><input type="checkbox" name="tags" value="野心"> 野心</label>
-          <label class="tag-check"><input type="checkbox" name="tags" value="竞争"> 竞争</label>
-          <label class="tag-check"><input type="checkbox" name="tags" value="贫穷"> 贫穷</label>
-          <label class="tag-check"><input type="checkbox" name="tags" value="身体"> 身体</label>
-          <label class="tag-check"><input type="checkbox" name="tags" value="家庭"> 家庭</label>
-          <label class="tag-check"><input type="checkbox" name="tags" value="成长"> 成长</label>
+          <label class="tag-check"><input type="checkbox" name="tags" value="智识"><span>智识</span></label>
+          <label class="tag-check"><input type="checkbox" name="tags" value="友谊"><span>友谊</span></label>
+          <label class="tag-check"><input type="checkbox" name="tags" value="野心"><span>野心</span></label>
+          <label class="tag-check"><input type="checkbox" name="tags" value="竞争"><span>竞争</span></label>
+          <label class="tag-check"><input type="checkbox" name="tags" value="贫穷"><span>贫穷</span></label>
+          <label class="tag-check"><input type="checkbox" name="tags" value="身体"><span>身体</span></label>
+          <label class="tag-check"><input type="checkbox" name="tags" value="家庭"><span>家庭</span></label>
+          <label class="tag-check"><input type="checkbox" name="tags" value="成长"><span>成长</span></label>
         </div>
       </div>
 
       <div class="form-group">
         <label for="story-content">故事正文</label>
-        <textarea id="story-content" rows="16" placeholder="在这里写你的故事。&#10;&#10;不需要华丽的文笔，真实就好。&#10;段落之间空一行。&#10;可以用 --- 分隔场景。" required></textarea>
+        <div class="textarea-wrap">
+          <textarea id="story-content" name="content" rows="20" placeholder="在这里写你的故事。不需要华丽的文笔，真实就好。" required></textarea>
+          <div class="char-count"><span id="char-num">0</span> 字</div>
+        </div>
       </div>
 
-      <div class="form-group form-note">
-        <p>点击「提交」会跳转到 GitHub 创建一条投稿。你需要一个 GitHub 账号（免费注册）。<br>我们会审阅后发布，审稿只看真诚与尊重，不评判文笔。</p>
-        <p>提交即表示你同意：将出版权授予本项目、保留署名权、知悉所有收入全部捐赠。</p>
+      <div class="form-agreement">
+        <label class="agreement-check">
+          <input type="checkbox" required>
+          <span>提交即表示我同意将出版权授予本项目，保留署名权，知悉所有收入全部捐赠。</span>
+        </label>
       </div>
 
-      <button type="submit" class="btn-primary btn-submit">提交故事</button>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" id="submit-btn">提交故事</button>
+        <span class="form-hint">审稿只看真诚与尊重，不评判文笔</span>
+      </div>
     </form>
+
+    <div id="success-msg" class="success-message" style="display:none;">
+      <div class="success-icon">&#10003;</div>
+      <h2>投稿已收到</h2>
+      <p>感谢你写下自己的故事。我们会尽快审阅，通过后将发布在网站上。</p>
+      <a href="{{ '/' | relative_url }}" class="btn-outline btn-back">回到首页</a>
+    </div>
+
   </div>
 </section>
 
 <script>
-document.getElementById('story-form').addEventListener('submit', function(e) {
+// 字数统计
+var ta = document.getElementById('story-content');
+var counter = document.getElementById('char-num');
+ta.addEventListener('input', function() {
+  counter.textContent = ta.value.length;
+});
+
+// AJAX 提交
+var form = document.getElementById('story-form');
+form.addEventListener('submit', function(e) {
   e.preventDefault();
+  var btn = document.getElementById('submit-btn');
+  btn.textContent = '提交中…';
+  btn.disabled = true;
 
-  var title = document.getElementById('story-title').value.trim();
-  var author = document.getElementById('story-author').value.trim();
-  var content = document.getElementById('story-content').value.trim();
+  var data = new FormData(form);
 
-  var tags = [];
-  document.querySelectorAll('input[name="tags"]:checked').forEach(function(cb) {
-    tags.push(cb.value);
+  fetch(form.action, {
+    method: 'POST',
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  }).then(function(res) {
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      btn.textContent = '提交失败，请重试';
+      btn.disabled = false;
+    }
+  }).catch(function() {
+    btn.textContent = '网络错误，请重试';
+    btn.disabled = false;
   });
-
-  var body = '### 故事标题\n\n' + title +
-    '\n\n### 笔名\n\n' + author +
-    '\n\n### 主题标签\n\n' + (tags.length > 0 ? tags.join(', ') : '未选择') +
-    '\n\n### 故事正文\n\n' + content +
-    '\n\n---\n*通过网站投稿表单提交*';
-
-  var url = 'https://github.com/girls-era/girls-era.github.io/issues/new' +
-    '?template=story-submission.yml' +
-    '&title=' + encodeURIComponent('故事投稿：' + title) +
-    '&story-title=' + encodeURIComponent(title) +
-    '&author=' + encodeURIComponent(author) +
-    '&tags=' + encodeURIComponent(tags.join(', ')) +
-    '&content=' + encodeURIComponent(content);
-
-  if (url.length > 8000) {
-    url = 'https://github.com/girls-era/girls-era.github.io/issues/new' +
-      '?labels=故事投稿' +
-      '&title=' + encodeURIComponent('故事投稿：' + title) +
-      '&body=' + encodeURIComponent(body);
-  }
-
-  window.open(url, '_blank');
 });
 </script>
